@@ -1,8 +1,12 @@
 {
   "name": "vue2-element-cron",
   "version": "1.0.0",
-  "private": true,
   "main": "lib/vue2-element-cron.umd.min.js",
+  "files": [
+    "lib/**/*",
+    "package.json",
+    "README.md"
+  ],
   "scripts": {
     "start": "vue-cli-service serve",
     "build": "vue-cli-service build",
