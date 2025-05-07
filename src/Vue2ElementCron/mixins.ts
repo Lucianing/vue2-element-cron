@@ -148,6 +148,13 @@ export class CommonWatchAction extends mixins(CommonState) {
       this.type = 3
       this.specifiedValue = newVal.split(',').map(Number)
     }
+
+    // 单个数字
+    const n = Number(newVal)
+    if (!isNaN(n)) {
+      this.type = 3
+      this.specifiedValue = [n]
+    }
   }
 
   public getCronStr (): string {

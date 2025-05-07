@@ -6,7 +6,11 @@
         label="Crontab表达式"
         :status-icon="false"
       >
-        <Vue2ElementCron v-model="formData.crontab" />
+        <Vue2ElementCron
+          disabledSecond
+          disabledMinute
+          v-model="formData.crontab"
+        />
       </el-form-item>
     </el-form>
   </div>

@@ -21,11 +21,17 @@
           v-model="activeTabKey"
           class="crontab-tabs"
         >
-          <el-tab-pane name="second">
+          <el-tab-pane
+            v-if="!disabledSecond"
+            name="second"
+          >
             <span slot="label" class="crontab-tabs-label">秒</span>
             <SecondPane v-model="second" />
           </el-tab-pane>
-          <el-tab-pane name="minute">
+          <el-tab-pane
+            v-if="!disabledMinute"
+            name="minute"
+          >
             <span slot="label" class="crontab-tabs-label">分</span>
             <MinutePane v-model="minute" />
           </el-tab-pane>
@@ -56,7 +62,7 @@
             class="crontab-footer-crontab-str"
             :style="isInvalid ? { color: 'var(--danger-color, rgb(245, 108, 108))' } : {}"
           >
-            {{ isInvalid ? `${crontabStr} 无效的表达式，【日和周】或【日和月】冲突` : crontabStr }}
+            {{ isInvalid ? `${crontabStr} 错误的表达式` : crontabStr }}
           </span>
           <el-button
             type="primary"
@@ -121,6 +127,18 @@ export default class Vue2ElementCron extends Vue {
   })
   readonly readonly!: boolean;
 
+  @Prop({
+    type: Boolean,
+    default: false
+  })
+  readonly disabledSecond!: boolean
+
+  @Prop({
+    type: Boolean,
+    default: false
+  })
+  readonly disabledMinute!: boolean
+
   isVisible = false
   activeTabKey = 'second'
 
@@ -133,22 +151,48 @@ export default class Vue2ElementCron extends Vue {
   year = ''
 
   get crontabStr () {
-    return `${this.second || '*'} ${this.minute || '*'} ${this.hour || '*'} ${this.day || '*'} ${this.month || '*'} ${this.week || ''} ${this.year || ''}`.trim()
+    let s = this.second || '*'
+    if (this.disabledSecond) {
+      s = '0'
+    }
+
+    let m = this.minute || '*'
+    if (this.disabledMinute) {
+      m = '0'
+    }
+
+    return `${s} ${m} ${this.hour || '*'} ${this.day || '*'} ${this.month || '*'} ${this.week || ''} ${this.year || ''}`.trim()
   }
 
   get isInvalid () {
     return !isValidCronExpression(this.crontabStr)
   }
 
+  created () {
+    this.activeTabKey = this.getInitActiveTabKey()
+  }
+
   @Watch('isVisible')
   onVisibleChange (val: boolean) {
     if (!val) {
-      this.activeTabKey = 'second'
+      this.activeTabKey = this.getInitActiveTabKey()
       return
     }
     this.$nextTick().then(() => {
       this.parseCrontab()
     })
+  }
+
+  private getInitActiveTabKey () {
+    if (this.disabledSecond && this.disabledMinute) {
+      return 'hour'
+    }
+
+    if (this.disabledSecond) {
+      return 'minute'
+    }
+
+    return 'second'
   }
 
   private handleClear () {
