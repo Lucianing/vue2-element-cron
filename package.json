@@ -1,6 +1,6 @@
 {
   "name": "vue2-element-cron",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "lib/vue2-element-cron.umd.min.js",
   "files": [
     "lib/*.js",

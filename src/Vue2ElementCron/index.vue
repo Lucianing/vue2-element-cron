@@ -1,10 +1,12 @@
 <template>
   <div class="crontab">
     <el-popover
+      ref="popoverRef"
       v-model="isVisible"
       popper-class="crontab-popover"
       placement="bottom-start"
       trigger="click"
+      :visible-arrow="false"
     >
       <el-input
         slot="reference"
@@ -85,6 +87,7 @@
 import Vue from 'vue'
 import { Component, Prop, Watch, ModelSync } from 'vue-property-decorator'
 import { isValidCronExpression } from 'cron-expression-validator'
+import { ElPopover } from 'element-ui/types/popover'
 import SecondPane from './SecondPane.vue'
 import MinutePane from './MinutePane.vue'
 import HourPane from './HourPane.vue'
@@ -106,6 +109,12 @@ import YearPane from './YearPane.vue'
   }
 })
 export default class Vue2ElementCron extends Vue {
+  $refs!: {
+    readonly popoverRef: ElPopover & {
+      readonly updatePopper: () => void
+    }
+  }
+
   @ModelSync('value', 'change', { type: String })
   readonly crontab!: string
 
@@ -180,6 +189,13 @@ export default class Vue2ElementCron extends Vue {
     }
     this.$nextTick().then(() => {
       this.parseCrontab()
+    })
+  }
+
+  @Watch('activeTabKey')
+  onActiveTabKeyChange () {
+    this.$nextTick().then(() => {
+      this.$refs.popoverRef.updatePopper()
     })
   }
 
